@@ -36,6 +36,9 @@ object SubscriptionParser {
 
     private val shortDatePattern = Pattern.compile("""([0-1]?[0-9])[\-月\/\.]([0-3]?[0-9])[日号]""")
 
+    // 标明下次扣费日期的行；凭证上常先出现支付时间，需优先取这些行里的日期
+    private val nextBillingKeywords = listOf("下次", "到期", "续费")
+
     private val commonIgnoredLines = setOf(
         "账单详情", "账单", "扣款成功", "自动续费管理", "订单详情", "交易详情",
         "微信支付", "支付宝", "收银台", "支付凭证", "扣费凭证", "Apple", "App Store",
@@ -121,9 +124,10 @@ object SubscriptionParser {
     }
 
     private fun extractDate(rawText: String, lines: List<String>): Long? {
-        // Priority 1: Full date (yyyy-MM-dd)
-        for (pattern in fullDatePatterns) {
-            val matcher = pattern.matcher(rawText)
+        // Priority 1: Full date (yyyy-MM-dd), lines naming the next billing date first
+        val keywordLines = lines.filter { line -> nextBillingKeywords.any { line.contains(it) } }
+        for (text in keywordLines + rawText) for (pattern in fullDatePatterns) {
+            val matcher = pattern.matcher(text)
             if (matcher.find()) {
                 val year = matcher.group(1)?.toIntOrNull()
                 val month = matcher.group(2)?.toIntOrNull()
