@@ -15,6 +15,7 @@ import org.robolectric.annotation.Config
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.performClick
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -58,6 +59,15 @@ class ExampleRobolectricTest {
 
   @Test
   fun `launch MainActivity test`() {
-    composeTestRule.onNodeWithTag("hello_text").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("home_screen_list").assertIsDisplayed()
+  }
+
+  @Test
+  fun `bottom tabs switch between add and settings`() {
+    composeTestRule.onNodeWithTag("bottom_nav_item_add").performClick()
+    composeTestRule.onNodeWithTag("save_subscription_button").assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag("bottom_nav_item_settings").performClick()
+    composeTestRule.onNodeWithTag("settings_screen_list").assertIsDisplayed()
   }
 }

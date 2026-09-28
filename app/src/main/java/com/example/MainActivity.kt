@@ -1,46 +1,49 @@
 package com.example
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.activity.viewModels
+import com.example.data.AppDatabase
+import com.example.data.SubscriptionRepository
+import com.example.notification.NotificationHelper
+import com.example.ui.SubGuardApp
+import com.example.ui.SubscriptionViewModel
 import com.example.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val subscriptionViewModel: SubscriptionViewModel by viewModels {
+        val repo = (application as? SubGuardApplication)?.repository
+            ?: SubscriptionRepository(AppDatabase.getDatabase(applicationContext).subscriptionDao())
+        SubscriptionViewModel.provideFactory(repo, applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // 重建（如旋转屏幕）时导航栈会自行恢复，不能再按通知跳一次详情页
+        val targetSubscriptionId = if (savedInstanceState == null) {
+            intent?.getLongExtra(NotificationHelper.EXTRA_SUBSCRIPTION_ID, -1L) ?: -1L
+        } else {
+            -1L
+        }
+
         setContent {
             MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .testTag("hello_box"),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Hello, 订阅卫士",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.testTag("hello_text")
-                        )
-                    }
-                }
+                SubGuardApp(
+                    viewModel = subscriptionViewModel,
+                    initialSubscriptionId = targetSubscriptionId
+                )
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 }
