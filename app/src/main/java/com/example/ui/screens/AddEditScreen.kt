@@ -112,6 +112,7 @@ fun AddEditScreen(
     subscriptionId: Long,
     viewModel: SubscriptionViewModel,
     onNavigateBack: () -> Unit,
+    onSaved: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -564,10 +565,7 @@ fun AddEditScreen(
                                     isActive = isActive,
                                     createdAt = createdAt
                                 )
-                                viewModel.saveSubscription(subscription) {
-                                    Toast.makeText(context, "已保存", Toast.LENGTH_SHORT).show()
-                                    onNavigateBack()
-                                }
+                                viewModel.saveSubscription(subscription, onComplete = onSaved)
                             }
                         },
                         modifier = Modifier

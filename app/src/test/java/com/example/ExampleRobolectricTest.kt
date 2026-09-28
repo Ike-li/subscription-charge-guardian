@@ -17,7 +17,12 @@ import org.robolectric.annotation.Config
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollToNodeAction
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -72,6 +77,21 @@ class ExampleRobolectricTest {
 
     assertNotNull(request)
     assertTrue(request.requestedPermissions.contains(Manifest.permission.POST_NOTIFICATIONS))
+  }
+
+  @Test
+  fun `saving a new subscription returns home with a saved snackbar`() {
+    composeTestRule.onNodeWithTag("bottom_nav_item_add").performClick()
+    composeTestRule.onNodeWithTag("input_subscription_name").performTextInput("B站大会员")
+    composeTestRule.onNode(hasScrollToNodeAction())
+      .performScrollToNode(hasTestTag("input_subscription_amount"))
+    composeTestRule.onNodeWithTag("input_subscription_amount").performTextInput("15")
+    composeTestRule.onNodeWithTag("save_subscription_button").performClick()
+
+    composeTestRule.waitUntil(5_000) {
+      composeTestRule.onAllNodesWithText("已保存").fetchSemanticsNodes().isNotEmpty()
+    }
+    composeTestRule.onNodeWithTag("home_screen_list").assertIsDisplayed()
   }
 
   @Test
