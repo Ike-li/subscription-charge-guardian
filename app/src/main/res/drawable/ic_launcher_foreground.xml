@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Clean protective shield with notification bell and checkmark -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,23 L30,33.5 V53 C30,68 40.2,81.9 54,85 C67.8,81.9 78,68 78,53 V33.5 Z" />
+    <!-- Notification Bell Symbol inside Shield -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M54,33 C49.6,33 46,36.6 46,41 V48 L43,51 V53 H65 V51 L62,48 V41 C62,36.6 58.4,33 54,33 Z" />
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M51.5,54.5 C51.5,55.9 52.6,57 54,57 C55.4,57 56.5,55.9 56.5,54.5 Z" />
+    <!-- Verified Checkmark in Lower Shield -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M48.5,63.5 L43.5,68.5 L51,76 L66,61 L61,56 L51,66 Z" />
+</vector>

@@ -1,0 +1,6 @@
+{
+  "name": "订阅卫士",
+  "description": "本地自动续费订阅管理与扣费提醒工具，支持截图OCR识别",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
