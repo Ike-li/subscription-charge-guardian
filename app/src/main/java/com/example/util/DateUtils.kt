@@ -42,7 +42,8 @@ object DateUtils {
         val startFrom = getStartOfDay(fromTimestamp)
         val startTarget = getStartOfDay(targetTimestamp)
         val diffMillis = startTarget - startFrom
-        return (diffMillis / (1000L * 60L * 60L * 24L)).toInt()
+        // 两端都是当天零点，跨夏令时切换时会多或少 1 小时，四舍五入到整天
+        return Math.round(diffMillis / (1000.0 * 60 * 60 * 24)).toInt()
     }
 
     /**
