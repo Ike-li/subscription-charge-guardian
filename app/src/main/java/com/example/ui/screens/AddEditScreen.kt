@@ -98,6 +98,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.Subscription
 import com.example.ocr.OcrFillableForm
+import com.example.ui.components.OcrCandidateChips
 import com.example.ocr.ParsedSubscriptionData
 import com.example.ui.SubscriptionViewModel
 import com.example.ui.components.ConfirmDeleteDialog
@@ -150,6 +151,8 @@ fun AddEditScreen(
     var showRawTextPreview by remember { mutableStateOf(false) }
     var showOverwriteDialog by remember { mutableStateOf(false) }
     var pendingParsedData by remember { mutableStateOf<ParsedSubscriptionData?>(null) }
+    // 最近一次识别结果，用来在各字段下列出候选值
+    var ocrResult by remember { mutableStateOf<ParsedSubscriptionData?>(null) }
 
     // 相机临时图片 URI
     var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
@@ -209,6 +212,7 @@ fun AddEditScreen(
 
     // 用户没填过任何内容时直接填入，否则弹窗让用户选择覆盖方式
     val onOcrParsed: (ParsedSubscriptionData) -> Unit = { data ->
+        ocrResult = data
         if (currentOcrForm().hasUserInput) {
             pendingParsedData = data
             showOverwriteDialog = true
@@ -792,6 +796,17 @@ fun AddEditScreen(
                         isError = nameError != null,
                         supportingText = nameError?.let { { Text(it, color = MaterialTheme.colorScheme.error) } }
                     )
+                    ocrResult?.let { result ->
+                        OcrCandidateChips(
+                            labels = result.nameCandidates,
+                            selectedIndex = result.nameCandidates.indexOf(name.trim()),
+                            onPick = { index ->
+                                name = result.nameCandidates[index]
+                                nameError = null
+                            },
+                            modifier = Modifier.testTag("ocr_candidates_name")
+                        )
+                    }
                 }
             }
 
@@ -839,6 +854,24 @@ fun AddEditScreen(
                                 )
                             }
                         }
+                    }
+                    ocrResult?.let { result ->
+                        val candidates = result.amountCandidates
+                        OcrCandidateChips(
+                            labels = candidates.map {
+                                Subscription.getCurrencySymbol(it.currency) + String.format(java.util.Locale.US, "%.2f", it.amount)
+                            },
+                            selectedIndex = candidates.indexOfFirst {
+                                it.amount == amountText.toDoubleOrNull() && it.currency == currency
+                            },
+                            onPick = { index ->
+                                amountText = String.format(java.util.Locale.US, "%.2f", candidates[index].amount)
+                                currency = candidates[index].currency
+                                currencyChosen = true
+                                amountError = null
+                            },
+                            modifier = Modifier.testTag("ocr_candidates_amount")
+                        )
                     }
                 }
             }
@@ -937,6 +970,17 @@ fun AddEditScreen(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
+                    }
+                    ocrResult?.let { result ->
+                        OcrCandidateChips(
+                            labels = result.dateCandidates.map { DateUtils.formatDate(it) },
+                            selectedIndex = result.dateCandidates.indexOf(nextBillingDate),
+                            onPick = { index ->
+                                nextBillingDate = result.dateCandidates[index]
+                                nextBillingDateChosen = true
+                            },
+                            modifier = Modifier.testTag("ocr_candidates_date")
+                        )
                     }
                 }
             }
