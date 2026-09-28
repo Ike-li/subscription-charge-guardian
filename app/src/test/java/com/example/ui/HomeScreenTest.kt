@@ -1,6 +1,11 @@
 package com.example.ui
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -76,5 +81,16 @@ class HomeScreenTest {
     composeTestRule.onNodeWithTag("monthly_total_text").assertTextEquals("15.00")
     composeTestRule.onNodeWithText("另有 $9.99 / 月").assertExists()
     composeTestRule.onNodeWithText("¥180.00 + $119.88 / 年").assertExists()
+  }
+
+  @Test
+  fun `long pressing a subscription asks to delete it`() {
+    showHome(sub("B站大会员", 15.0, "CNY"))
+    waitForText("监控中 1 项")
+
+    composeTestRule.onNodeWithTag("home_screen_list").performScrollToNode(hasText("B站大会员"))
+    composeTestRule.onNodeWithText("B站大会员").performTouchInput { longClick() }
+
+    composeTestRule.onNodeWithText("删除订阅").assertIsDisplayed()
   }
 }
