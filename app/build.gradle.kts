@@ -17,6 +17,9 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // 只打包 ARM：ML Kit 文字识别原生库每个架构约 10MB，x86/x86_64 只在 x86 模拟器上用得到
+    ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
   }
 
   signingConfigs {
