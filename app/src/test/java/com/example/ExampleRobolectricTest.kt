@@ -58,6 +58,6 @@ class ExampleRobolectricTest {
 
   @Test
   fun `launch MainActivity test`() {
-    composeTestRule.onNodeWithTag("home_screen_list").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("hello_text").assertIsDisplayed()
   }
 }
