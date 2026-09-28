@@ -2,6 +2,7 @@ package com.example
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertFalse
@@ -24,5 +25,12 @@ class AppManifestTest {
       .orEmpty()
 
     assertFalse(permissions.contains(Manifest.permission.INTERNET))
+  }
+
+  @Test
+  fun `app data is excluded from system backup`() {
+    val flags = context.applicationInfo.flags
+
+    assertFalse(flags and ApplicationInfo.FLAG_ALLOW_BACKUP != 0)
   }
 }
