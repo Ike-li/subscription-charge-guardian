@@ -97,6 +97,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.Subscription
+import com.example.ocr.OcrFillableForm
 import com.example.ocr.ParsedSubscriptionData
 import com.example.ui.SubscriptionViewModel
 import com.example.ui.components.ConfirmDeleteDialog
@@ -131,6 +132,11 @@ fun AddEditScreen(
     var cancelNote by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(true) }
     var createdAt by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    // 币种、周期、日期都有默认值，单独记录用户是否选过，截图识别“仅填空白项”时据此判断
+    var currencyChosen by remember { mutableStateOf(false) }
+    var billingCycleChosen by remember { mutableStateOf(false) }
+    var nextBillingDateChosen by remember { mutableStateOf(false) }
 
     // 校验错误状态
     var nameError by remember { mutableStateOf<String?>(null) }
@@ -168,10 +174,40 @@ fun AddEditScreen(
                     cancelNote = it.cancelNote ?: ""
                     isActive = it.isActive
                     createdAt = it.createdAt
+                    currencyChosen = true
+                    billingCycleChosen = true
+                    nextBillingDateChosen = true
                 }
             }
         } else {
             viewModel.clearOcrState()
+        }
+    }
+
+    val currentOcrForm: () -> OcrFillableForm = {
+        OcrFillableForm(
+            name, amountText, currency, billingCycle, nextBillingDate,
+            currencyChosen, billingCycleChosen, nextBillingDateChosen
+        )
+    }
+
+    // 识别结果填入表单
+    val applyOcr: (ParsedSubscriptionData, Boolean) -> Unit = { data, overwriteAll ->
+        val filled = currentOcrForm().fillWith(data, overwriteAll)
+        name = filled.name
+        amountText = filled.amountText
+        currency = filled.currency
+        billingCycle = filled.billingCycle
+        nextBillingDate = filled.nextBillingDate
+    }
+
+    // 用户没填过任何内容时直接填入，否则弹窗让用户选择覆盖方式
+    val onOcrParsed: (ParsedSubscriptionData) -> Unit = { data ->
+        if (currentOcrForm().hasUserInput) {
+            pendingParsedData = data
+            showOverwriteDialog = true
+        } else {
+            applyOcr(data, true)
         }
     }
 
@@ -183,13 +219,7 @@ fun AddEditScreen(
             viewModel.processImageOcr(
                 context = context,
                 uri = it,
-                onSuccess = { data -> handleParsedOcrResult(data, name, amountText) { overwrite ->
-                    if (overwrite) applyOcrData(data, true, { name = it }, { amountText = it }, { currency = it }, { billingCycle = it }, { nextBillingDate = it })
-                    else {
-                        pendingParsedData = data
-                        showOverwriteDialog = true
-                    }
-                }},
+                onSuccess = onOcrParsed,
                 onError = { err ->
                     coroutineScope.launch { snackbarHostState.showSnackbar(err) }
                 }
@@ -204,13 +234,7 @@ fun AddEditScreen(
             viewModel.processImageOcr(
                 context = context,
                 uri = it,
-                onSuccess = { data -> handleParsedOcrResult(data, name, amountText) { overwrite ->
-                    if (overwrite) applyOcrData(data, true, { name = it }, { amountText = it }, { currency = it }, { billingCycle = it }, { nextBillingDate = it })
-                    else {
-                        pendingParsedData = data
-                        showOverwriteDialog = true
-                    }
-                }},
+                onSuccess = onOcrParsed,
                 onError = { err ->
                     coroutineScope.launch { snackbarHostState.showSnackbar(err) }
                 }
@@ -227,13 +251,7 @@ fun AddEditScreen(
                 viewModel.processImageOcr(
                     context = context,
                     uri = uri,
-                    onSuccess = { data -> handleParsedOcrResult(data, name, amountText) { overwrite ->
-                        if (overwrite) applyOcrData(data, true, { name = it }, { amountText = it }, { currency = it }, { billingCycle = it }, { nextBillingDate = it })
-                        else {
-                            pendingParsedData = data
-                            showOverwriteDialog = true
-                        }
-                    }},
+                    onSuccess = onOcrParsed,
                     onError = { err ->
                         coroutineScope.launch { snackbarHostState.showSnackbar(err) }
                     }
@@ -288,6 +306,7 @@ fun AddEditScreen(
             initialDateMillis = nextBillingDate,
             onDateSelected = { selected ->
                 nextBillingDate = selected
+                nextBillingDateChosen = true
             },
             onDismiss = { showDatePicker = false }
         )
@@ -322,7 +341,7 @@ fun AddEditScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        applyOcrData(parsed, true, { name = it }, { amountText = it }, { currency = it }, { billingCycle = it }, { nextBillingDate = it })
+                        applyOcr(parsed, true)
                         showOverwriteDialog = false
                     }
                 ) {
@@ -332,7 +351,7 @@ fun AddEditScreen(
             dismissButton = {
                 TextButton(
                     onClick = {
-                        applyOcrData(parsed, false, { name = it }, { amountText = it }, { currency = it }, { billingCycle = it }, { nextBillingDate = it })
+                        applyOcr(parsed, false)
                         showOverwriteDialog = false
                     }
                 ) {
@@ -808,7 +827,10 @@ fun AddEditScreen(
                             listOf("CNY" to "¥", "USD" to "$", "HKD" to "HK$").forEach { (curr, label) ->
                                 FilterChip(
                                     selected = currency == curr,
-                                    onClick = { currency = curr },
+                                    onClick = {
+                                        currency = curr
+                                        currencyChosen = true
+                                    },
                                     label = { Text(label, style = MaterialTheme.typography.bodyMedium) },
                                     modifier = Modifier.padding(horizontal = 2.dp)
                                 )
@@ -841,7 +863,10 @@ fun AddEditScreen(
                             Card(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .clickable { billingCycle = cycleKey }
+                                    .clickable {
+                                        billingCycle = cycleKey
+                                        billingCycleChosen = true
+                                    }
                                     .testTag("cycle_option_$cycleKey"),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(
@@ -1061,52 +1086,6 @@ fun AddEditScreen(
                 }
             }
         }
-    }
-}
-
-/**
- * 判断是否需要弹出覆盖提示，或者直接填充
- */
-private fun handleParsedOcrResult(
-    data: ParsedSubscriptionData,
-    currentName: String,
-    currentAmount: String,
-    action: (shouldOverwriteDirectly: Boolean) -> Unit
-) {
-    val hasUserData = currentName.isNotBlank() || currentAmount.isNotBlank()
-    if (hasUserData) {
-        action(false) // 询问用户
-    } else {
-        action(true) // 直接填充
-    }
-}
-
-/**
- * 将解析出的数据填入表单，根据 overwriteExisting 决定是否覆盖已有值
- */
-private fun applyOcrData(
-    data: ParsedSubscriptionData,
-    overwriteExisting: Boolean,
-    setName: (String) -> Unit,
-    setAmount: (String) -> Unit,
-    setCurrency: (String) -> Unit,
-    setBillingCycle: (String) -> Unit,
-    setNextBillingDate: (Long) -> Unit
-) {
-    data.name?.let {
-        setName(it)
-    }
-    data.amount?.let {
-        setAmount(String.format(java.util.Locale.US, "%.2f", it))
-    }
-    if (overwriteExisting || data.currency != "CNY") {
-        setCurrency(data.currency)
-    }
-    data.billingCycle?.let {
-        setBillingCycle(it)
-    }
-    data.nextBillingDate?.let {
-        setNextBillingDate(it)
     }
 }
 
