@@ -39,6 +39,20 @@ class SubscriptionParserTest {
   }
 
   @Test
+  fun `name label prefix is removed when OCR reads a half-width colon`() {
+    // ML Kit 常把全角冒号“：”识别成半角“:”
+    val parsed = SubscriptionParser.parse(
+      """
+      微信支付
+      商品名称:哔哩哔哩大会员连续包月
+      支付金额:¥15.00
+      """.trimIndent()
+    )
+
+    assertEquals("哔哩哔哩大会员连续包月", parsed.name)
+  }
+
+  @Test
   fun `missing fields lists what OCR could not recognize`() {
     val parsed = ParsedSubscriptionData(amount = 15.0)
 

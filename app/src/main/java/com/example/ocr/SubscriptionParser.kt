@@ -195,8 +195,8 @@ object SubscriptionParser {
             val cleaned = keywordLine
                 .replace(Regex("""^[0-9\.\s\-\*·、]+"""), "")
                 .replace("自动续费", "")
-                .replace("商品名称：", "")
-                .replace("项目：", "")
+                // OCR 常把全角冒号识别成半角
+                .replace(Regex("""^(商品名称|项目)\s*[:：]\s*"""), "")
                 .trim()
             if (cleaned.isNotBlank()) return cleaned
         }
