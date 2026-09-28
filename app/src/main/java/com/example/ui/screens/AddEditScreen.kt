@@ -1031,7 +1031,8 @@ fun AddEditScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row(
+                    // 按内容定宽、放不下时整颗换行：平分宽度时 18sp 的“14天前”会在按钮里折成两行
+                    FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -1043,12 +1044,11 @@ fun AddEditScreen(
                                     Text(
                                         text = "${days}天前",
                                         style = MaterialTheme.typography.bodyLarge,
+                                        maxLines = 1,
                                         modifier = Modifier.padding(vertical = 4.dp)
                                     )
                                 },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .testTag("reminder_chip_$days")
+                                modifier = Modifier.testTag("reminder_chip_$days")
                             )
                         }
                     }
