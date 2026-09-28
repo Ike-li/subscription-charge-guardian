@@ -97,8 +97,8 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val activeSubscriptions by viewModel.activeSubscriptions.collectAsStateWithLifecycle()
-    val monthlyTotal by viewModel.monthlyEstimatedTotal.collectAsStateWithLifecycle()
-    val yearlyTotal by viewModel.yearlyEstimatedTotal.collectAsStateWithLifecycle()
+    val monthlyTotals by viewModel.monthlyTotalsByCurrency.collectAsStateWithLifecycle()
+    val yearlyTotals by viewModel.yearlyTotalsByCurrency.collectAsStateWithLifecycle()
     val upcoming7Days by viewModel.upcoming7DaysSubscriptions.collectAsStateWithLifecycle()
 
     var subscriptionToDelete by remember { mutableStateOf<Subscription?>(null) }
@@ -243,8 +243,8 @@ fun HomeScreen(
             // 1. 顶部总览卡片
             item {
                 OverviewCard(
-                    monthlyTotal = monthlyTotal,
-                    yearlyTotal = yearlyTotal,
+                    monthlyTotals = monthlyTotals,
+                    yearlyTotals = yearlyTotals,
                     activeCount = activeSubscriptions.size
                 )
             }
@@ -362,10 +362,15 @@ fun HomeScreen(
  */
 @Composable
 fun OverviewCard(
-    monthlyTotal: Double,
-    yearlyTotal: Double,
+    monthlyTotals: Map<String, Double>,
+    yearlyTotals: Map<String, Double>,
     activeCount: Int
 ) {
+    // 人民币作为主数字；其他币种不换算，单独列出
+    val otherMonthlyTotals = monthlyTotals.filterKeys { it != "CNY" }.toSortedMap()
+    val orderedYearlyTotals = mapOf("CNY" to (yearlyTotals["CNY"] ?: 0.0)) +
+        yearlyTotals.filterKeys { it != "CNY" }.toSortedMap()
+
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -416,7 +421,7 @@ fun OverviewCard(
                     modifier = Modifier.padding(bottom = 4.dp, end = 4.dp)
                 )
                 Text(
-                    text = String.format(Locale.getDefault(), "%.2f", monthlyTotal),
+                    text = String.format(Locale.getDefault(), "%.2f", monthlyTotals["CNY"] ?: 0.0),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -427,6 +432,15 @@ fun OverviewCard(
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                     modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                )
+            }
+
+            if (otherMonthlyTotals.isNotEmpty()) {
+                Text(
+                    text = "另有 ${formatTotals(otherMonthlyTotals)} / 月",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
 
@@ -444,7 +458,7 @@ fun OverviewCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
                 )
                 Text(
-                    text = "¥ ${String.format(Locale.getDefault(), "%.2f", yearlyTotal)} / 年",
+                    text = "${formatTotals(orderedYearlyTotals)} / 年",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -453,6 +467,12 @@ fun OverviewCard(
         }
     }
 }
+
+/** 例如 "¥15.00 + $9.99" */
+private fun formatTotals(totals: Map<String, Double>): String =
+    totals.entries.joinToString(" + ") { (currency, amount) ->
+        "${Subscription.getCurrencySymbol(currency)}${String.format(Locale.getDefault(), "%.2f", amount)}"
+    }
 
 /**
  * 7 天内即将扣费项卡片

@@ -41,22 +41,22 @@ class SubscriptionViewModel(
             initialValue = emptyList()
         )
 
-    // 本月预计扣费总额
-    val monthlyEstimatedTotal: StateFlow<Double> = activeSubscriptions.map { list ->
-        list.sumOf { it.calculateMonthlyAmount() }
+    // 本月预计扣费，按币种分别合计（不联网拿不到汇率，不做换算）
+    val monthlyTotalsByCurrency: StateFlow<Map<String, Double>> = activeSubscriptions.map { list ->
+        list.groupBy { it.currency }.mapValues { (_, subs) -> subs.sumOf { it.calculateMonthlyAmount() } }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0.0
+        initialValue = emptyMap()
     )
 
-    // 年度预计扣费总额
-    val yearlyEstimatedTotal: StateFlow<Double> = activeSubscriptions.map { list ->
-        list.sumOf { it.calculateYearlyAmount() }
+    // 年度预计扣费，按币种分别合计
+    val yearlyTotalsByCurrency: StateFlow<Map<String, Double>> = activeSubscriptions.map { list ->
+        list.groupBy { it.currency }.mapValues { (_, subs) -> subs.sumOf { it.calculateYearlyAmount() } }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0.0
+        initialValue = emptyMap()
     )
 
     // 最近 7 天即将扣费列表（nextBillingDate 在 0..7 天内且 isActive 为 true，按日期升序）
