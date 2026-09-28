@@ -68,9 +68,10 @@ object SubscriptionParser {
     }
 
     private fun detectCurrency(text: String): String {
+        // HK$ 也含 "$"，必须先于美元判断
         return when {
-            text.contains("$") || text.contains("USD", ignoreCase = true) -> "USD"
             text.contains("HK$", ignoreCase = true) || text.contains("HKD", ignoreCase = true) -> "HKD"
+            text.contains("$") || text.contains("USD", ignoreCase = true) -> "USD"
             else -> "CNY"
         }
     }
