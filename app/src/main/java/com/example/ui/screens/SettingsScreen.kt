@@ -350,7 +350,7 @@ fun SettingsScreen(
                         Text(
                             text = "• 零网络权限：应用完全不声明 INTERNET 网络权限，绝不会向任何服务器发送任何数据。\n" +
                                    "• 本地 OCR 识别：截图文字识别完全由 Google ML Kit 离线引擎在您的设备芯片上运行，不依赖云端，不消耗流量。\n" +
-                                   "• 本地安全存储：所有订阅名称、金额、扣费日期均保存在手机 SQLite 数据库中，您可以随时导出或清除。",
+                                   "• 本地安全存储：所有订阅名称、金额、扣费日期均保存在手机本地数据库中，不参与系统云备份；删除订阅或卸载应用即可清除。",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             lineHeight = 24.sp
