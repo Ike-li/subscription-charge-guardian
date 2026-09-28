@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.data.AppDatabase
+import com.example.data.SubscriptionRepository
 import com.example.notification.NotificationHelper
 import com.example.util.DateUtils
 
@@ -14,9 +15,10 @@ class BillingReminderWorker(
 
     override suspend fun doWork(): Result {
         val database = AppDatabase.getDatabase(appContext)
-        val activeSubscriptions = database.subscriptionDao().getAllActiveDirect()
-
         val todayMillis = System.currentTimeMillis()
+
+        SubscriptionRepository(database.subscriptionDao()).rollForwardOverdue(todayMillis)
+        val activeSubscriptions = database.subscriptionDao().getAllActiveDirect()
 
         for (sub in activeSubscriptions) {
             val daysRemaining = DateUtils.daysBetween(todayMillis, sub.nextBillingDate)

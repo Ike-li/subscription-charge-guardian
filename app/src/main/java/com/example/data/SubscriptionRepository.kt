@@ -23,4 +23,11 @@ class SubscriptionRepository(private val subscriptionDao: SubscriptionDao) {
     suspend fun deleteById(id: Long) = subscriptionDao.deleteSubscriptionById(id)
 
     suspend fun setActive(id: Long, isActive: Boolean) = subscriptionDao.setSubscriptionActive(id, isActive)
+
+    suspend fun rollForwardOverdue(today: Long) {
+        for (sub in subscriptionDao.getAllActiveDirect()) {
+            val rolled = sub.rollForward(today)
+            if (rolled != sub) subscriptionDao.updateSubscription(rolled)
+        }
+    }
 }

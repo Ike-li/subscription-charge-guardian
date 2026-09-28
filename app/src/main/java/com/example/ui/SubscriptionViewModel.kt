@@ -71,6 +71,13 @@ class SubscriptionViewModel(
         initialValue = emptyList()
     )
 
+    init {
+        // 打开 App 时先顺延已过扣费日的订阅，避免后台任务还没跑时首页显示“已逾期”
+        viewModelScope.launch {
+            repository.rollForwardOverdue(System.currentTimeMillis())
+        }
+    }
+
     // OCR 识别状态
     private val _isOcrProcessing = MutableStateFlow(false)
     val isOcrProcessing: StateFlow<Boolean> = _isOcrProcessing.asStateFlow()

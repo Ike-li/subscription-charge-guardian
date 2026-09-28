@@ -2,6 +2,8 @@ package com.example.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.util.DateUtils
+import java.util.Calendar
 
 /**
  * 订阅实体模型
@@ -56,6 +58,30 @@ data class Subscription(
             CYCLE_YEARLY -> amount / 12.0
             else -> amount
         }
+    }
+
+    /**
+     * 扣费日已过且自动续费时，把下次扣费日推到今天或之后最近的一期
+     */
+    fun rollForward(today: Long): Subscription {
+        val startOfToday = DateUtils.getStartOfDay(today)
+        if (!autoRenew || nextBillingDate >= startOfToday) return this
+        val monthsPerCycle = when (billingCycle) {
+            CYCLE_QUARTERLY -> 3
+            CYCLE_YEARLY -> 12
+            else -> 1
+        }
+        // 从原扣费日一次加 n 期，一次跳多期时月末日期不会越滚越早；
+        // 但结果会存回数据库，下次顺延从新日期起算，31 日过完二月后会停在 28 日
+        val next = generateSequence(1) { it + 1 }
+            .map { cycles ->
+                Calendar.getInstance().apply {
+                    timeInMillis = nextBillingDate
+                    add(Calendar.MONTH, cycles * monthsPerCycle)
+                }.timeInMillis
+            }
+            .first { it >= startOfToday }
+        return copy(nextBillingDate = next)
     }
 
     /**
