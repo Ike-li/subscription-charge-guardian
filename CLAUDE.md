@@ -18,6 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew :app:lintDebug                                       # 基线：0 errors，64 warnings
 ```
 
+- **release 开了 R8（full mode）和资源裁剪**，单元测试只跑未压缩的代码，发现不了 R8 问题。凡是被反射实例化的类，都要在 `app/proguard-rules.pro` 里 keep 住，已有一条是给 ML Kit 的 `ComponentRegistrar` 的：缺了它，release 包里 OCR 会报 NullPointerException。改了依赖或混淆规则后，要把 release 包装到设备上，把 OCR 识别和保存流程走一遍。
+- release 签名从环境变量读取 `KEYSTORE_PATH`、`STORE_PASSWORD`、`KEY_PASSWORD`，alias 固定为 `upload`；本地验证可以临时生成一个 alias 为 `upload` 的 keystore 传进去。
+- 只打包 `arm64-v8a` 和 `armeabi-v7a`（ML Kit 原生库每个架构约 10MB），所以 x86 模拟器装不上。
 - 测试结果在 `app/build/test-results/testDebugUnitTest/*.xml`。所有测试都是本地 JVM 测试，大部分用 Robolectric（`@Config(sdk = [34])`）；`androidTest` 里只有模板用例。
 - 构建时 KSP 会打印一条 `AWT-EventQueue` 的 NullPointerException，这是无害的噪音。
 

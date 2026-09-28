@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ML Kit 启动时按 manifest 里登记的类名，反射创建 ComponentRegistrar
+# （CommonComponentRegistrar、VisionCommonRegistrar、TextRegistrar）。
+# R8 full mode 会删掉这些只被反射调用的无参构造函数，导致 release 包里文字识别报 NullPointerException。
+-keep class * implements com.google.firebase.components.ComponentRegistrar { <init>(); }
