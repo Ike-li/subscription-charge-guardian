@@ -59,6 +59,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,6 +121,17 @@ fun HomeScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasNotificationPermission = isGranted
+    }
+
+    // Android 13+ 首次进入首页时请求通知权限；被拒绝后由下方提示条引导去设置开启
+    var notificationPermissionAsked by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!hasNotificationPermission && !notificationPermissionAsked &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        ) {
+            notificationPermissionAsked = true
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     subscriptionToDelete?.let { sub ->

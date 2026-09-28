@@ -1,5 +1,6 @@
 package com.example
 
+import android.Manifest
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.example.ocr.SubscriptionParser
@@ -11,6 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -60,6 +62,16 @@ class ExampleRobolectricTest {
   @Test
   fun `launch MainActivity test`() {
     composeTestRule.onNodeWithTag("home_screen_list").assertIsDisplayed()
+  }
+
+  @Test
+  fun `first home entry asks for notification permission`() {
+    composeTestRule.waitForIdle()
+
+    val request = shadowOf(composeTestRule.activity).lastRequestedPermission
+
+    assertNotNull(request)
+    assertTrue(request.requestedPermissions.contains(Manifest.permission.POST_NOTIFICATIONS))
   }
 
   @Test
