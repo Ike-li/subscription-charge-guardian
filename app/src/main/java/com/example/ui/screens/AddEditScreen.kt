@@ -199,6 +199,11 @@ fun AddEditScreen(
         currency = filled.currency
         billingCycle = filled.billingCycle
         nextBillingDate = filled.nextBillingDate
+        if (data.missingFields.isNotEmpty()) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("未识别到：${data.missingFields.joinToString("、")}，请手动填写")
+            }
+        }
     }
 
     // 用户没填过任何内容时直接填入，否则弹窗让用户选择覆盖方式

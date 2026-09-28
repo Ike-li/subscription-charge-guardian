@@ -37,4 +37,11 @@ class SubscriptionParserTest {
     }.timeInMillis
     assertEquals(expected, parsed.nextBillingDate)
   }
+
+  @Test
+  fun `missing fields lists what OCR could not recognize`() {
+    val parsed = ParsedSubscriptionData(amount = 15.0)
+
+    assertEquals(listOf("订阅名称", "扣费周期", "下次扣费日期"), parsed.missingFields)
+  }
 }

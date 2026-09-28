@@ -12,7 +12,16 @@ data class ParsedSubscriptionData(
     val billingCycle: String? = null,
     val nextBillingDate: Long? = null,
     val rawText: String = ""
-)
+) {
+    /** 没识别出来、需要提示用户手动填写的字段（币种识别不到时默认 CNY，不算在内） */
+    val missingFields: List<String>
+        get() = listOfNotNull(
+            "订阅名称".takeIf { name == null },
+            "金额".takeIf { amount == null },
+            "扣费周期".takeIf { billingCycle == null },
+            "下次扣费日期".takeIf { nextBillingDate == null }
+        )
+}
 
 object SubscriptionParser {
 
