@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsActive
@@ -48,6 +49,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -66,6 +68,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.calendar.CalendarSync
 import com.example.notification.NotificationHelper
 import com.example.ui.theme.StatusGreen
 import com.example.ui.theme.StatusOrange
@@ -73,9 +76,24 @@ import com.example.ui.theme.StatusOrange
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    calendarSyncEnabled: Boolean,
+    onCalendarSyncEnabledChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    var hasCalendarPermission by remember { mutableStateOf(CalendarSync.hasPermission(context)) }
+    val calendarPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        hasCalendarPermission = CalendarSync.hasPermission(context)
+        if (hasCalendarPermission) {
+            onCalendarSyncEnabledChange(true)
+        } else {
+            Toast.makeText(context, "没有日历权限，无法同步到手机日历", Toast.LENGTH_SHORT).show()
+        }
+    }
+    val calendarSyncOn = calendarSyncEnabled && hasCalendarPermission
 
     var hasNotificationPermission by remember {
         mutableStateOf(
@@ -228,6 +246,81 @@ fun SettingsScreen(
                                 Text("测试发送通知")
                             }
                         }
+                    }
+                }
+            }
+
+            // 同步到手机日历：本应用的通知被关或后台被清理时，由日历 App 兜底提醒
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(18.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                modifier = Modifier.size(44.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Event,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "同步到手机日历",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = if (calendarSyncOn) "已开启" else "未开启",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (calendarSyncOn) StatusGreen else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = calendarSyncOn,
+                                onCheckedChange = { turnOn ->
+                                    when {
+                                        !turnOn -> onCalendarSyncEnabledChange(false)
+                                        CalendarSync.hasPermission(context) -> {
+                                            hasCalendarPermission = true
+                                            onCalendarSyncEnabledChange(true)
+                                        }
+                                        else -> calendarPermissionLauncher.launch(CalendarSync.PERMISSIONS)
+                                    }
+                                },
+                                modifier = Modifier.testTag("settings_calendar_sync_switch")
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            text = "开启后，每个订阅未来一年的扣费日都会写进手机上单独的“订阅卫士”日历，并按设置的天数提前提醒。" +
+                                "本应用的通知被关闭、或被系统清理后台时，日历照样会提醒。\n" +
+                                "这个日历只存在本机，不挂在任何云端账号下。关闭开关会把它整个删除；" +
+                                "卸载本应用前请先关掉这个开关，否则它会留在手机日历里。",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = 24.sp
+                        )
                     }
                 }
             }

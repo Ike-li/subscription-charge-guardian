@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -166,7 +167,11 @@ fun SubGuardApp(
             }
 
             composable(Screen.Settings.route) {
-                SettingsScreen()
+                val calendarSyncEnabled by viewModel.calendarSyncEnabled.collectAsStateWithLifecycle()
+                SettingsScreen(
+                    calendarSyncEnabled = calendarSyncEnabled,
+                    onCalendarSyncEnabledChange = viewModel::setCalendarSyncEnabled
+                )
             }
 
             composable(

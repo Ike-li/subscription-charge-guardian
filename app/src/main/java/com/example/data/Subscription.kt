@@ -60,17 +60,20 @@ data class Subscription(
         }
     }
 
+    // 用函数而不是属性：Room 会把带字段的属性当成数据列，结构一变就会清空数据
+    fun monthsPerCycle(): Int = when (billingCycle) {
+        CYCLE_QUARTERLY -> 3
+        CYCLE_YEARLY -> 12
+        else -> 1
+    }
+
     /**
      * 扣费日已过且自动续费时，把下次扣费日推到今天或之后最近的一期
      */
     fun rollForward(today: Long): Subscription {
         val startOfToday = DateUtils.getStartOfDay(today)
         if (!autoRenew || nextBillingDate >= startOfToday) return this
-        val monthsPerCycle = when (billingCycle) {
-            CYCLE_QUARTERLY -> 3
-            CYCLE_YEARLY -> 12
-            else -> 1
-        }
+        val monthsPerCycle = monthsPerCycle()
         // 从原扣费日一次加 n 期，一次跳多期时月末日期不会越滚越早；
         // 但结果会存回数据库，下次顺延从新日期起算，31 日过完二月后会停在 28 日
         val next = generateSequence(1) { it + 1 }

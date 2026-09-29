@@ -3,6 +3,7 @@ package com.example.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.calendar.CalendarSync
 import com.example.data.AppDatabase
 import com.example.data.SubscriptionRepository
 import com.example.notification.NotificationHelper
@@ -26,6 +27,9 @@ class BillingReminderWorker(
                 NotificationHelper.sendBillingReminder(appContext, sub, daysRemaining)
             }
         }
+
+        // 每天重写一次，日历里始终是今天起一年内的扣费日
+        CalendarSync.update(appContext, activeSubscriptions, CalendarSync.isEnabled(appContext), todayMillis)
 
         return Result.success()
     }

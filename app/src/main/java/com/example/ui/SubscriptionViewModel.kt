@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.calendar.CalendarSync
 import com.example.data.Subscription
 import com.example.data.SubscriptionRepository
 import com.example.ocr.OcrManager
@@ -12,10 +13,12 @@ import com.example.ocr.ParsedSubscriptionData
 import com.example.ocr.SubscriptionParser
 import com.example.util.DateUtils
 import com.example.worker.ReminderScheduler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -71,11 +74,26 @@ class SubscriptionViewModel(
         initialValue = emptyList()
     )
 
+    private val _calendarSyncEnabled = MutableStateFlow(CalendarSync.isEnabled(appContext))
+    val calendarSyncEnabled: StateFlow<Boolean> = _calendarSyncEnabled.asStateFlow()
+
     init {
         // 打开 App 时先顺延已过扣费日的订阅，避免后台任务还没跑时首页显示“已逾期”
         viewModelScope.launch {
             repository.rollForwardOverdue(System.currentTimeMillis())
         }
+        // 同步开着时订阅一变就重写手机日历（新增、修改、删除、标记取消、顺延都会触发）；关掉时删除“订阅卫士”日历
+        viewModelScope.launch(Dispatchers.IO) {
+            combine(repository.activeSubscriptions, _calendarSyncEnabled) { subs, enabled -> subs to enabled }
+                .collect { (subs, enabled) ->
+                    CalendarSync.update(appContext, subs, enabled, System.currentTimeMillis())
+                }
+        }
+    }
+
+    fun setCalendarSyncEnabled(enabled: Boolean) {
+        CalendarSync.setEnabled(appContext, enabled)
+        _calendarSyncEnabled.value = enabled
     }
 
     // OCR 识别状态

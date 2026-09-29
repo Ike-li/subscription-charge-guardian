@@ -1,8 +1,10 @@
 package com.example.ui
 
+import android.app.Application
 import android.content.Intent
 import android.provider.CalendarContract
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollToNodeAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,6 +14,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.example.calendar.CalendarSync
 import com.example.data.AppDatabase
 import com.example.data.Subscription
 import com.example.data.SubscriptionRepository
@@ -92,5 +95,16 @@ class DetailScreenTest {
     assertEquals("FREQ=MONTHLY", intent.getStringExtra(CalendarContract.Events.RRULE))
     assertTrue(intent.getBooleanExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, false))
     assertEquals(billingDate, intent.getLongExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 0))
+  }
+
+  @Test
+  fun `with calendar sync on the detail page says it is already synced`() {
+    val app = ApplicationProvider.getApplicationContext<Application>()
+    shadowOf(app).grantPermissions(*CalendarSync.PERMISSIONS)
+    CalendarSync.setEnabled(app, true)
+    showDetail()
+
+    composeTestRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText("已自动同步到手机日历", substring = true))
+    composeTestRule.onAllNodesWithText("添加到手机日历").assertCountEquals(0)
   }
 }
