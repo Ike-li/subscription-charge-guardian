@@ -61,7 +61,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **面向中老年用户的字号**：body/label 样式 ≥ 16sp，title 及更大 ≥ 20sp，由 `TypographyTest` 检查。界面文字一律用 `MaterialTheme.typography`，不写死 `fontSize`。
 - **OCR 结果只是建议值**：不能覆盖用户已填的内容（"仅填空白项"），没识别出来的字段要提示用户手动填写。
 - 界面文案、代码注释都用中文。
-- README 有中文（`README.md`）和英文（`README.en.md`）两份，改功能说明或常见问题时两份一起改。`docs/screenshots/` 里的截图只能用虚构数据拍，不能出现真实的订阅、金额或账号。
+- README 有中文（`README.md`）和英文（`README.en.md`）两份，GitHub Pages 介绍页也有中文（`docs/index.html`）和英文（`docs/en/index.html`）两份，改功能说明或常见问题时四处一起改。介绍页的常见问题同时写在页面正文和 `<script type="application/ld+json">` 的 FAQPage 里，两处文字要一致。`docs/screenshots/` 和 `docs/social-preview.png` 只能用虚构数据，不能出现真实的订阅、金额或账号。
 
 ## 数据库与测试的坑
 

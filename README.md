@@ -1,6 +1,6 @@
 # 订阅卫士 SubGuard
 
-中文 | [English](README.en.md)
+中文 | [English](README.en.md) | [介绍页](https://ike-li.github.io/subscription-charge-guardian/)
 
 **订阅卫士是一款开源、完全离线的 Android 自动续费订阅管理应用：记下你开通的会员和订阅，在每次扣费前提醒你，帮你及时取消不想再续费的服务。** 它不申请网络权限，数据只存在手机上；可以从扣费截图里自动识别订阅信息，也可以把扣费日写进手机日历。界面字号偏大，照顾中老年用户。
 

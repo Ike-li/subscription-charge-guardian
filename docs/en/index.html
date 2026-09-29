@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SubGuard (订阅卫士): offline subscription tracker and renewal reminder for Android</title>
+  <meta name="description" content="SubGuard is an open-source, fully offline Android app that tracks auto-renewing subscriptions and reminds you before each charge, with screenshot recognition and phone-calendar reminders. No network permission; data stays on the phone. Chinese UI.">
+  <link rel="canonical" href="https://ike-li.github.io/subscription-charge-guardian/en/">
+  <link rel="alternate" hreflang="zh-CN" href="https://ike-li.github.io/subscription-charge-guardian/">
+  <link rel="alternate" hreflang="en" href="https://ike-li.github.io/subscription-charge-guardian/en/">
+  <link rel="alternate" hreflang="x-default" href="https://ike-li.github.io/subscription-charge-guardian/">
+  <meta name="theme-color" content="#1565c0">
+  <link rel="icon" type="image/png" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="订阅卫士 SubGuard">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="SubGuard (订阅卫士): offline subscription tracker and renewal reminder for Android">
+  <meta property="og:description" content="SubGuard is an open-source, fully offline Android app that tracks auto-renewing subscriptions and reminds you before each charge, with screenshot recognition and phone-calendar reminders. No network permission; data stays on the phone. Chinese UI.">
+  <meta property="og:url" content="https://ike-li.github.io/subscription-charge-guardian/en/">
+  <meta property="og:image" content="https://ike-li.github.io/subscription-charge-guardian/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="../style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "订阅卫士",
+      "alternateName": "SubGuard",
+      "description": "SubGuard is an open-source, fully offline Android app that tracks auto-renewing subscriptions and reminds you before each charge, with screenshot recognition and phone-calendar reminders. No network permission; data stays on the phone. Chinese UI.",
+      "url": "https://ike-li.github.io/subscription-charge-guardian/en/",
+      "image": "https://ike-li.github.io/subscription-charge-guardian/icon.png",
+      "screenshot": [
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/home.webp",
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/ocr.webp",
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/detail.webp",
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/settings.webp"
+      ],
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Android 7.0 or later",
+      "downloadUrl": "https://github.com/Ike-li/subscription-charge-guardian/releases/latest",
+      "fileSize": "11MB",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "license": "https://opensource.org/licenses/MIT",
+      "author": {
+        "@type": "Person",
+        "name": "Ike-li",
+        "url": "https://github.com/Ike-li"
+      },
+      "sameAs": [
+        "https://github.com/Ike-li/subscription-charge-guardian"
+      ],
+      "inLanguage": "zh-CN"
+    },
+    {
+      "@type": "FAQPage",
+      "inLanguage": "en",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does SubGuard need internet access? Does it upload my data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No to both. The app does not request the INTERNET permission, so it cannot connect to the network. Subscription data is stored only in a local database on the phone, and Android cloud backup is turned off. Screenshot recognition uses Google ML Kit models bundled in the APK and runs entirely on the phone."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it cancel subscriptions for me?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. SubGuard records subscriptions and reminds you; cancelling has to be done on the service's own platform. Each subscription can store a cancellation link and cancellation steps to follow when the reminder arrives."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why did a reminder arrive late or not at all?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Xiaomi, Huawei, OPPO, vivo and other Android skins restrict background work, which can delay or block notifications. Set SubGuard's battery policy to \"No restrictions\" and allow autostart (the app's settings page links to these system settings), or turn on \"Sync to phone calendar\" so the system calendar delivers the reminders."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work without Google Play services?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The text-recognition model is bundled in the APK and does not depend on Google Play services. It was tested on an Android 14 emulator with no Google components at all: screenshot recognition, charge notifications and calendar sync all worked."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work on Huawei HarmonyOS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HarmonyOS 4 and earlier can install and run it. HarmonyOS NEXT (HarmonyOS 5 and later) has no Android runtime and cannot install any APK, so SubGuard does not run there."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the app available in English?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The interface is in Chinese only; this page and the README are available in English."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which screens can screenshot recognition read?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The rules are tuned on real screenshots of Google Play's subscription page and on constructed samples of WeChat Pay receipts. They extract the name, amount, currency, billing cycle and next billing date. Alipay, the App Store and other screens have not been tested yet; when recognition gets something wrong, pick a candidate or edit the field."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which currencies are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chinese yuan (CNY), US dollar (USD) and Hong Kong dollar (HKD). The app is offline and has no exchange rates, so totals are shown per currency."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does calendar sync send my data to the cloud?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Automatic sync writes only to a separate calendar under an on-device local account that belongs to no cloud account. With \"Add to phone calendar\", you choose the calendar in your calendar app; if it syncs to a cloud account such as Google or Xiaomi, the subscription name and amount are uploaded with it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I install and update it?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Download the APK from the GitHub Releases page. The app is offline and cannot check for updates itself: watch the repository's releases on GitHub (Watch → Custom → Releases) or track them with a tool such as Obtainium. Install a new version over the old one to keep your data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I verify the APK has not been tampered with?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every release is signed with the same certificate, whose SHA-256 fingerprint is b4f99528a9c2bd045058116a99b7e72bc8dfd11985cc3d74d2bcbaeb4e7ead8d. Check it with apksigner verify --print-certs from the Android SDK."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. SubGuard is free and open source under the MIT license."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar">
+      <a class="brand" href="../"><img src="../icon.png" width="32" height="32" alt="">订阅卫士 SubGuard</a>
+      <a href="../" hreflang="zh-CN">中文</a>
+    </nav>
+  </div>
+  <main class="wrap">
+    <header class="hero">
+      <img class="icon" src="../icon.png" width="88" height="88" alt="SubGuard icon">
+      <h1>订阅卫士 SubGuard<small>Offline subscription tracker and renewal reminder for Android</small></h1>
+      <p class="lead">SubGuard is an open-source, fully offline Android app for tracking auto-renewing subscriptions: it records the memberships you pay for and reminds you before every charge, so you can cancel the ones you no longer want in time. It requests no network permission and keeps all data on the phone. Subscription details can be filled in from a screenshot of a receipt, and billing dates can be added to the phone&#x27;s calendar.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/Ike-li/subscription-charge-guardian/releases/latest">Download APK</a>
+        <a class="btn btn-outline" href="https://github.com/Ike-li/subscription-charge-guardian">View source</a>
+      </div>
+      <p class="facts">Android 7.0+ · about 11 MB · free and open source (MIT) · no network permission · Chinese-only interface</p>
+    </header>
+
+    <section aria-labelledby="shots">
+      <h2 id="shots">Screenshots</h2>
+      <div class="shots">
+      <figure><img src="../screenshots/home.webp" width="540" height="960" alt="SubGuard home screen: ¥72.50 expected this month plus $15.49, and two subscriptions renewing within 7 days"><figcaption>Overview</figcaption></figure>
+      <figure><img src="../screenshots/ocr.webp" width="540" height="960" alt="Screenshot recognition: the subscription name and the amount 15.00 filled in from a WeChat Pay receipt" loading="lazy"><figcaption>Screenshot recognition</figcaption></figure>
+      <figure><img src="../screenshots/detail.webp" width="540" height="960" alt="Subscription details: the Add to phone calendar button and saved steps for cancelling auto-renewal" loading="lazy"><figcaption>Details and cancellation steps</figcaption></figure>
+      <figure><img src="../screenshots/settings.webp" width="540" height="960" alt="Settings: charge notifications and the enabled Sync to phone calendar switch" loading="lazy"><figcaption>Notifications and calendar</figcaption></figure>
+      </div>
+    </section>
+
+    <section aria-labelledby="features">
+      <h2 id="features">Features</h2>
+      <div class="cards">
+      <div class="card"><h3>Track subscriptions</h3><p>Name, amount (CNY, USD or HKD), monthly / quarterly / yearly cycle and next billing date, plus a cancellation link and steps.</p></div>
+      <div class="card"><h3>Overview</h3><p>Expected charges for this month and this year, totalled per currency, and the subscriptions renewing within 7 days.</p></div>
+      <div class="card"><h3>Charge reminders</h3><p>A local notification 1, 3, 7 or 14 days before each charge; tap it to open the subscription. Auto-renewing billing dates roll forward after they pass.</p></div>
+      <div class="card"><h3>Phone calendar</h3><p>Add a charge to your calendar app in one tap, or turn on sync to write the next 12 months of billing dates to a separate calendar with reminders.</p></div>
+      <div class="card"><h3>Screenshot recognition</h3><p>On-device text recognition fills in the name, amount, cycle and date from a receipt screenshot; pick a candidate when a field is misread.</p></div>
+      <div class="card"><h3>Large type</h3><p>Body text is at least 16sp and titles at least 20sp, for older users.</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="compat">
+      <h2 id="compat">Supported phones</h2>
+      <div class="compat">
+        <div class="card ok"><h3>Works</h3><ul>
+          <li>Android 7.0 or later on an ARM processor: Xiaomi / Redmi, OPPO / OnePlus / realme, vivo / iQOO, Honor, Samsung, Pixel and others</li>
+          <li>Phones without Google services (common in mainland China)</li>
+          <li>Huawei HarmonyOS 4 and earlier</li>
+        </ul></div>
+        <div class="card no"><h3>Does not work</h3><ul>
+          <li>Android 6.0 or earlier</li>
+          <li>Huawei HarmonyOS NEXT (HarmonyOS 5 and later), which cannot install any APK</li>
+          <li>x86 devices (mostly Android emulators on PCs)</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq">
+      <h2 id="faq">FAQ</h2>
+      <div class="item"><h3>Does SubGuard need internet access? Does it upload my data?</h3><p>No to both. The app does not request the <code>INTERNET</code> permission, so it cannot connect to the network. Subscription data is stored only in a local database on the phone, and Android cloud backup is turned off. Screenshot recognition uses Google ML Kit models bundled in the APK and runs entirely on the phone.</p></div>
+      <div class="item"><h3>Can it cancel subscriptions for me?</h3><p>No. SubGuard records subscriptions and reminds you; cancelling has to be done on the service&#x27;s own platform. Each subscription can store a cancellation link and cancellation steps to follow when the reminder arrives.</p></div>
+      <div class="item"><h3>Why did a reminder arrive late or not at all?</h3><p>Xiaomi, Huawei, OPPO, vivo and other Android skins restrict background work, which can delay or block notifications. Set SubGuard&#x27;s battery policy to &quot;No restrictions&quot; and allow autostart (the app&#x27;s settings page links to these system settings), or turn on &quot;Sync to phone calendar&quot; so the system calendar delivers the reminders.</p></div>
+      <div class="item"><h3>Does it work without Google Play services?</h3><p>Yes. The text-recognition model is bundled in the APK and does not depend on Google Play services. It was tested on an Android 14 emulator with no Google components at all: screenshot recognition, charge notifications and calendar sync all worked.</p></div>
+      <div class="item"><h3>Does it work on Huawei HarmonyOS?</h3><p>HarmonyOS 4 and earlier can install and run it. HarmonyOS NEXT (HarmonyOS 5 and later) has no Android runtime and cannot install any APK, so SubGuard does not run there.</p></div>
+      <div class="item"><h3>Is the app available in English?</h3><p>No. The interface is in Chinese only; this page and the README are available in English.</p></div>
+      <div class="item"><h3>Which screens can screenshot recognition read?</h3><p>The rules are tuned on real screenshots of Google Play&#x27;s subscription page and on constructed samples of WeChat Pay receipts. They extract the name, amount, currency, billing cycle and next billing date. Alipay, the App Store and other screens have not been tested yet; when recognition gets something wrong, pick a candidate or edit the field.</p></div>
+      <div class="item"><h3>Which currencies are supported?</h3><p>Chinese yuan (CNY), US dollar (USD) and Hong Kong dollar (HKD). The app is offline and has no exchange rates, so totals are shown per currency.</p></div>
+      <div class="item"><h3>Does calendar sync send my data to the cloud?</h3><p>Automatic sync writes only to a separate calendar under an on-device local account that belongs to no cloud account. With &quot;Add to phone calendar&quot;, you choose the calendar in your calendar app; if it syncs to a cloud account such as Google or Xiaomi, the subscription name and amount are uploaded with it.</p></div>
+      <div class="item"><h3>How do I install and update it?</h3><p>Download the APK from the GitHub Releases page. The app is offline and cannot check for updates itself: watch the repository&#x27;s releases on GitHub (Watch → Custom → Releases) or track them with a tool such as Obtainium. Install a new version over the old one to keep your data.</p></div>
+      <div class="item"><h3>How can I verify the APK has not been tampered with?</h3><p>Every release is signed with the same certificate, whose SHA-256 fingerprint is <code>b4f99528a9c2bd045058116a99b7e72bc8dfd11985cc3d74d2bcbaeb4e7ead8d</code>. Check it with <code>apksigner verify --print-certs</code> from the Android SDK.</p></div>
+      <div class="item"><h3>Is it free?</h3><p>Yes. SubGuard is free and open source under the MIT license.</p></div>
+    </section>
+
+    <section>
+      <div class="privacy">
+        <h2>Privacy</h2>
+        <ul>
+        <li>No network permission; no data ever leaves the phone.</li>
+        <li>Data stays in a local database with cloud backup turned off; no accounts, no analytics.</li>
+        <li>The calendar permission is requested only when calendar sync is turned on, and the app writes only to its own local calendar.</li>
+        <li>This page loads no external resources and has no analytics either.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">SubGuard (订阅卫士) · MIT License · <a href="https://github.com/Ike-li/subscription-charge-guardian">Source on GitHub</a></div>
+  </footer>
+</body>
+</html>

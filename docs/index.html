@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>订阅卫士 SubGuard：离线的 Android 自动续费订阅管理与扣费提醒 App</title>
+  <meta name="description" content="订阅卫士是一款开源、完全离线的 Android 自动续费订阅管理应用：记录会员订阅，扣费前提醒，支持截图识别和手机日历提醒，不申请网络权限，数据只存在手机上。免费下载 APK。">
+  <link rel="canonical" href="https://ike-li.github.io/subscription-charge-guardian/">
+  <link rel="alternate" hreflang="zh-CN" href="https://ike-li.github.io/subscription-charge-guardian/">
+  <link rel="alternate" hreflang="en" href="https://ike-li.github.io/subscription-charge-guardian/en/">
+  <link rel="alternate" hreflang="x-default" href="https://ike-li.github.io/subscription-charge-guardian/">
+  <meta name="theme-color" content="#1565c0">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="订阅卫士 SubGuard">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="订阅卫士 SubGuard：离线的 Android 自动续费订阅管理与扣费提醒 App">
+  <meta property="og:description" content="订阅卫士是一款开源、完全离线的 Android 自动续费订阅管理应用：记录会员订阅，扣费前提醒，支持截图识别和手机日历提醒，不申请网络权限，数据只存在手机上。免费下载 APK。">
+  <meta property="og:url" content="https://ike-li.github.io/subscription-charge-guardian/">
+  <meta property="og:image" content="https://ike-li.github.io/subscription-charge-guardian/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "订阅卫士",
+      "alternateName": "SubGuard",
+      "description": "订阅卫士是一款开源、完全离线的 Android 自动续费订阅管理应用：记录会员订阅，扣费前提醒，支持截图识别和手机日历提醒，不申请网络权限，数据只存在手机上。免费下载 APK。",
+      "url": "https://ike-li.github.io/subscription-charge-guardian/",
+      "image": "https://ike-li.github.io/subscription-charge-guardian/icon.png",
+      "screenshot": [
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/home.webp",
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/ocr.webp",
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/detail.webp",
+        "https://ike-li.github.io/subscription-charge-guardian/screenshots/settings.webp"
+      ],
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Android 7.0 及以上",
+      "downloadUrl": "https://github.com/Ike-li/subscription-charge-guardian/releases/latest",
+      "fileSize": "11MB",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "license": "https://opensource.org/licenses/MIT",
+      "author": {
+        "@type": "Person",
+        "name": "Ike-li",
+        "url": "https://github.com/Ike-li"
+      },
+      "sameAs": [
+        "https://github.com/Ike-li/subscription-charge-guardian"
+      ],
+      "inLanguage": "zh-CN"
+    },
+    {
+      "@type": "FAQPage",
+      "inLanguage": "zh-CN",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "订阅卫士需要联网吗？会不会上传我的数据？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "不需要联网，也不会上传。App 没有申请 INTERNET 权限，技术上就连不了网；订阅数据只保存在手机本地数据库里，并且关闭了系统云备份。截图识别用的是打包在安装包里的 Google ML Kit 离线模型，识别过程也在手机上完成。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "它能帮我自动取消订阅吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "不能。订阅卫士只负责记录和提醒，取消需要你到对应的平台操作。每条订阅都可以记下取消链接和取消步骤，收到提醒后照着做就行。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "为什么扣费提醒没有准时弹出来？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "小米、华为、OPPO、vivo 等系统会限制后台任务，可能让通知推迟或被拦截。建议在系统设置里把订阅卫士的省电策略设为“无限制”并允许自启动（App 设置页有入口）；也可以打开“同步到手机日历”，由系统日历负责提醒。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "没有 Google 服务的手机能用吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "能。截图识别的模型打包在安装包里，不依赖 Google Play 服务。在没有任何 Google 组件的 Android 14 模拟器上测试过，截图识别、扣费通知、写入手机日历都正常。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "华为鸿蒙手机能用吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HarmonyOS 4 及以前的版本可以安装使用。HarmonyOS NEXT（HarmonyOS 5 及以后）去掉了安卓运行环境，不能安装任何 APK，所以不能使用。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "截图识别支持哪些页面？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "目前用 Google Play 订阅页的真实截图和构造的微信扣费凭证样例调校过，能识别名称、金额、币种、周期和下次扣费日期。支付宝、App Store 等页面还没有专门验证，识别不准时可以从候选值里点选，或者手动修改。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "支持哪些币种？不同币种怎么合计？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "支持人民币、美元和港币。App 不联网拿不到汇率，所以不同币种分别合计，不做换算。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "同步到手机日历会把数据传到云端吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "自动同步只写入一个挂在本机账号下的“订阅卫士”日历，它不属于任何云端账号。详情页的“添加到手机日历”则由你在日历 App 里选择存到哪个日历；如果选的是小米账号、Google 账号等会同步到云端的日历，订阅名称和金额也会一起上传。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "怎么安装和更新？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "从 GitHub 的 Releases 页面下载 APK 安装。App 不联网，不会自己检查更新：可以在 GitHub 上关注本仓库的 Releases（Watch → Custom → Releases），或者用 Obtainium 之类的工具跟踪。新版本直接覆盖安装，数据会保留。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "怎么确认下载的安装包没有被篡改？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "所有安装包都用同一个签名证书签名，证书的 SHA-256 指纹是 b4f99528a9c2bd045058116a99b7e72bc8dfd11985cc3d74d2bcbaeb4e7ead8d，可以用 Android SDK 里的 apksigner verify --print-certs 命令核对。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "订阅卫士免费吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "免费，并且开源，使用 MIT 许可证。"
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar">
+      <a class="brand" href=""><img src="icon.png" width="32" height="32" alt="">订阅卫士 SubGuard</a>
+      <a href="en/" hreflang="en">English</a>
+    </nav>
+  </div>
+  <main class="wrap">
+    <header class="hero">
+      <img class="icon" src="icon.png" width="88" height="88" alt="订阅卫士图标">
+      <h1>订阅卫士 SubGuard<small>离线的自动续费订阅管理与扣费提醒</small></h1>
+      <p class="lead">订阅卫士是一款开源、完全离线的 Android 自动续费订阅管理应用：记下你开通的会员和订阅，在每次扣费前提醒你，帮你及时取消不想再续费的服务。它不申请网络权限，数据只存在手机上；可以从扣费截图里自动识别订阅信息，也可以把扣费日写进手机日历。界面字号偏大，照顾中老年用户。</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/Ike-li/subscription-charge-guardian/releases/latest">下载 APK</a>
+        <a class="btn btn-outline" href="https://github.com/Ike-li/subscription-charge-guardian">查看源码</a>
+      </div>
+      <p class="facts">Android 7.0 及以上 · 约 11MB · 免费开源（MIT） · 无网络权限 · 界面为中文</p>
+    </header>
+
+    <section aria-labelledby="shots">
+      <h2 id="shots">截图</h2>
+      <div class="shots">
+      <figure><img src="screenshots/home.webp" width="540" height="960" alt="订阅卫士首页：本月预计扣费 ¥72.50，另有 $15.49；最近 7 天即将扣费的哔哩哔哩大会员和百度网盘超级会员"><figcaption>首页总览</figcaption></figure>
+      <figure><img src="screenshots/ocr.webp" width="540" height="960" alt="截图识别：从微信扣费凭证截图自动填入订阅名称“哔哩哔哩大会员连续包月”和金额 15.00 元" loading="lazy"><figcaption>截图识别</figcaption></figure>
+      <figure><img src="screenshots/detail.webp" width="540" height="960" alt="订阅详情页：“添加到手机日历”按钮，以及记下的取消自动续费步骤" loading="lazy"><figcaption>详情与取消步骤</figcaption></figure>
+      <figure><img src="screenshots/settings.webp" width="540" height="960" alt="设置页：扣费通知提醒，以及已开启的“同步到手机日历”开关" loading="lazy"><figcaption>通知与日历提醒</figcaption></figure>
+      </div>
+    </section>
+
+    <section aria-labelledby="features">
+      <h2 id="features">功能</h2>
+      <div class="cards">
+      <div class="card"><h3>记录订阅</h3><p>名称、金额（人民币 / 美元 / 港币）、每月 / 每季 / 每年、下次扣费日期，还可以记下取消链接和取消步骤。</p></div>
+      <div class="card"><h3>首页总览</h3><p>本月和全年预计扣费，按币种分别合计；最近 7 天要扣费的订阅一目了然。</p></div>
+      <div class="card"><h3>扣费提醒</h3><p>扣费前 1 / 3 / 7 / 14 天发本地通知，点通知直接进入详情；自动续费的订阅过了扣费日会自动顺延到下一期。</p></div>
+      <div class="card"><h3>写进手机日历</h3><p>一键把扣费日加进日历 App；或者打开自动同步，未来一年的扣费日都会写进单独的“订阅卫士”日历，由系统日历按时提醒。</p></div>
+      <div class="card"><h3>截图识别</h3><p>从扣费截图里在本地识别名称、金额、周期和日期并自动填表；识别不准时点选候选值即可，已填的内容不会被覆盖。</p></div>
+      <div class="card"><h3>大字号</h3><p>正文不小于 16sp，标题不小于 20sp，照顾中老年用户。</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="compat">
+      <h2 id="compat">适用手机</h2>
+      <div class="compat">
+        <div class="card ok"><h3>能用</h3><ul>
+          <li>Android 7.0 及以上、ARM 处理器的手机：小米 / 红米、OPPO / 一加 / realme、vivo / iQOO、荣耀、三星、Pixel 等</li>
+          <li>没有 Google 服务的手机（国行机型常见）</li>
+          <li>华为 HarmonyOS 4 及以前的版本</li>
+        </ul></div>
+        <div class="card no"><h3>不能用</h3><ul>
+          <li>Android 6.0 及以前的手机</li>
+          <li>华为 HarmonyOS NEXT（HarmonyOS 5 及以后，俗称“纯血鸿蒙”）：不能安装任何 APK</li>
+          <li>x86 处理器的设备（主要是电脑上的安卓模拟器）</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq">
+      <h2 id="faq">常见问题</h2>
+      <div class="item"><h3>订阅卫士需要联网吗？会不会上传我的数据？</h3><p>不需要联网，也不会上传。App 没有申请 <code>INTERNET</code> 权限，技术上就连不了网；订阅数据只保存在手机本地数据库里，并且关闭了系统云备份。截图识别用的是打包在安装包里的 Google ML Kit 离线模型，识别过程也在手机上完成。</p></div>
+      <div class="item"><h3>它能帮我自动取消订阅吗？</h3><p>不能。订阅卫士只负责记录和提醒，取消需要你到对应的平台操作。每条订阅都可以记下取消链接和取消步骤，收到提醒后照着做就行。</p></div>
+      <div class="item"><h3>为什么扣费提醒没有准时弹出来？</h3><p>小米、华为、OPPO、vivo 等系统会限制后台任务，可能让通知推迟或被拦截。建议在系统设置里把订阅卫士的省电策略设为“无限制”并允许自启动（App 设置页有入口）；也可以打开“同步到手机日历”，由系统日历负责提醒。</p></div>
+      <div class="item"><h3>没有 Google 服务的手机能用吗？</h3><p>能。截图识别的模型打包在安装包里，不依赖 Google Play 服务。在没有任何 Google 组件的 Android 14 模拟器上测试过，截图识别、扣费通知、写入手机日历都正常。</p></div>
+      <div class="item"><h3>华为鸿蒙手机能用吗？</h3><p>HarmonyOS 4 及以前的版本可以安装使用。HarmonyOS NEXT（HarmonyOS 5 及以后）去掉了安卓运行环境，不能安装任何 APK，所以不能使用。</p></div>
+      <div class="item"><h3>截图识别支持哪些页面？</h3><p>目前用 Google Play 订阅页的真实截图和构造的微信扣费凭证样例调校过，能识别名称、金额、币种、周期和下次扣费日期。支付宝、App Store 等页面还没有专门验证，识别不准时可以从候选值里点选，或者手动修改。</p></div>
+      <div class="item"><h3>支持哪些币种？不同币种怎么合计？</h3><p>支持人民币、美元和港币。App 不联网拿不到汇率，所以不同币种分别合计，不做换算。</p></div>
+      <div class="item"><h3>同步到手机日历会把数据传到云端吗？</h3><p>自动同步只写入一个挂在本机账号下的“订阅卫士”日历，它不属于任何云端账号。详情页的“添加到手机日历”则由你在日历 App 里选择存到哪个日历；如果选的是小米账号、Google 账号等会同步到云端的日历，订阅名称和金额也会一起上传。</p></div>
+      <div class="item"><h3>怎么安装和更新？</h3><p>从 GitHub 的 Releases 页面下载 APK 安装。App 不联网，不会自己检查更新：可以在 GitHub 上关注本仓库的 Releases（Watch → Custom → Releases），或者用 Obtainium 之类的工具跟踪。新版本直接覆盖安装，数据会保留。</p></div>
+      <div class="item"><h3>怎么确认下载的安装包没有被篡改？</h3><p>所有安装包都用同一个签名证书签名，证书的 SHA-256 指纹是 <code>b4f99528a9c2bd045058116a99b7e72bc8dfd11985cc3d74d2bcbaeb4e7ead8d</code>，可以用 Android SDK 里的 <code>apksigner verify --print-certs</code> 命令核对。</p></div>
+      <div class="item"><h3>订阅卫士免费吗？</h3><p>免费，并且开源，使用 MIT 许可证。</p></div>
+    </section>
+
+    <section>
+      <div class="privacy">
+        <h2>隐私</h2>
+        <ul>
+        <li>不申请网络权限，任何数据都不会发出去。</li>
+        <li>数据只存在手机本地，关闭了系统云备份；没有账号，也没有统计。</li>
+        <li>日历权限只在打开“同步到手机日历”时申请，只写入 App 自己建的本机日历。</li>
+        <li>本页面也不加载任何外部资源，没有统计脚本。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">订阅卫士 SubGuard · MIT 许可证 · <a href="https://github.com/Ike-li/subscription-charge-guardian">GitHub 源码</a></div>
+  </footer>
+</body>
+</html>
