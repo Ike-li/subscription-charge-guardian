@@ -145,11 +145,12 @@ fun DetailScreen(
                 shadowElevation = 8.dp,
                 color = MaterialTheme.colorScheme.surface
             ) {
-                Row(
+                // 上下排列：并排时每个按钮只剩半屏宽，20sp 的"标记为已取消"放不下，系统字体调大后更放不下
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     if (subscription?.isActive == true) {
                         OutlinedButton(
@@ -160,7 +161,7 @@ fun DetailScreen(
                                 }
                             },
                             modifier = Modifier
-                                .weight(1f)
+                                .fillMaxWidth()
                                 .height(52.dp)
                                 .testTag("detail_mark_cancelled_button"),
                             shape = RoundedCornerShape(12.dp)
@@ -174,7 +175,7 @@ fun DetailScreen(
                     Button(
                         onClick = { onNavigateToEdit(subscriptionId) },
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
                             .height(52.dp)
                             .testTag("detail_bottom_edit_button"),
                         shape = RoundedCornerShape(12.dp)
