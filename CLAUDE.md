@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-「订阅卫士」：纯本地的 Android 应用（Kotlin + Jetpack Compose，单模块 `:app`），记录自动续费订阅，扣费前本地通知，支持截图 OCR 自动填表。项目最初由 Google AI Studio 生成，`metadata.json`、`.env.example`、secrets 插件和 `app/build.gradle.kts` 里被注释掉的 Firebase/Gemini 依赖都是模板残留，与需求相反，不要启用。
+「订阅卫士」：纯本地的 Android 应用（Kotlin + Jetpack Compose，单模块 `:app`），记录自动续费订阅，扣费前本地通知，支持截图 OCR 自动填表。项目最初由 Google AI Studio 生成，包名 `com.aistudio.subguard.kdypnx` 沿用至今：**不要改 applicationId**，改了已安装的 App 就无法覆盖升级（数据只存本机、关闭了备份，卸载重装会丢数据）。
 
 ## 构建与测试
 
@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew :app:assembleDebug :app:testDebugUnitTest            # 编译 + 全部单元测试
 ./gradlew :app:testDebugUnitTest --tests 'com.example.data.SubscriptionRollForwardTest'   # 单个测试类
 ./gradlew :app:testDebugUnitTest --tests 'com.example.ui.HomeScreenTest.long*'            # 单个方法（方法名带反引号和空格，用通配）
-./gradlew :app:lintDebug                                       # 基线：0 errors，64 warnings
+./gradlew :app:lintDebug                                       # 基线：0 errors，51 warnings
 ```
 
 - **release 开了 R8（full mode）和资源裁剪**，单元测试只跑未压缩的代码，发现不了 R8 问题。凡是被反射实例化的类，都要在 `app/proguard-rules.pro` 里 keep 住，已有一条是给 ML Kit 的 `ComponentRegistrar` 的：缺了它，release 包里 OCR 会报 NullPointerException。改了依赖或混淆规则后，要把 release 包装到设备上，把 OCR 识别和保存流程走一遍。
