@@ -56,6 +56,9 @@ android {
     buildConfig = true
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
+  // 在 GitHub 上分发，要紧的是下载大小：原生库压缩存放，APK 从 20.4MB 降到约 11MB。
+  // 代价是安装时系统要把库解压出来，占用的存储空间多约 1MB
+  packaging { jniLibs { useLegacyPackaging = true } }
   dependenciesInfo {
     includeInApk = false
     includeInBundle = true
