@@ -21,7 +21,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **release 开了 R8（full mode）和资源裁剪**，单元测试只跑未压缩的代码，发现不了 R8 问题。凡是被反射实例化的类，都要在 `app/proguard-rules.pro` 里 keep 住，已有一条是给 ML Kit 的 `ComponentRegistrar` 的：缺了它，release 包里 OCR 会报 NullPointerException。改了依赖或混淆规则后，要把 release 包装到设备上，把 OCR 识别和保存流程走一遍。
 - release 签名从环境变量读取 `KEYSTORE_PATH`、`STORE_PASSWORD`、`KEY_PASSWORD`，alias 固定为 `upload`；本地验证可以临时生成一个 alias 为 `upload` 的 keystore 传进去。
 - 只打包 `arm64-v8a` 和 `armeabi-v7a`（ML Kit 原生库每个架构约 10MB），所以 x86 模拟器装不上。
-- 测试结果在 `app/build/test-results/testDebugUnitTest/*.xml`。所有测试都是本地 JVM 测试，大部分用 Robolectric（`@Config(sdk = [34])`）；`androidTest` 里只有模板用例。
+- 测试结果在 `app/build/test-results/testDebugUnitTest/*.xml`。单元测试都是本地 JVM 测试，大部分用 Robolectric（`@Config(sdk = [34])`）。
+- Robolectric 没有系统日历，所以写日历的 `CalendarSyncTest` 放在 `androidTest`，要在真机或模拟器上跑（arm64，理由见上一条）。`connectedDebugAndroidTest` 会在所有已连接的设备上跑，想只跑一台时手动装包：
+  ```bash
+  ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
+  adb -s <serial> install -r -t app/build/outputs/apk/debug/app-debug.apk
+  adb -s <serial> install -r -t app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+  adb -s <serial> shell am instrument -w -e class com.example.calendar.CalendarSyncTest com.aistudio.subguard.kdypnx.test/androidx.test.runner.AndroidJUnitRunner
+  ```
 - 构建时 KSP 会打印一条 `AWT-EventQueue` 的 NullPointerException，这是无害的噪音。
 
 ## 架构
@@ -38,13 +45,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **OCR**：`OcrManager`（ML Kit 中文模型，打包在 APK 里，离线运行）→ `SubscriptionParser`（正则 + 关键词启发式）→ `ParsedSubscriptionData` → `OcrFillableForm.fillWith` 合并进 `AddEditScreen` 的表单。币种、周期、日期都有默认值，所以表单用 `currencyChosen` / `billingCycleChosen` / `nextBillingDateChosen` 记录"用户是否选过"；编辑模式载入已有记录时，这三项都算已选。
 
+**手机日历**（`calendar/`），为通知权限被关、后台被清理的情况兜底，有两条路：
+- 详情页"添加到手机日历"发 `ACTION_INSERT` Intent，由日历 App 让用户确认保存，不需要权限。
+- 设置页开关打开后，`CalendarSync` 在本机账号（`ACCOUNT_TYPE_LOCAL`）下建一个"订阅卫士"日历，每次清空后重写今天起 12 个月内的扣费日（当天 9:00，提前 `reminderDaysBefore` 天提醒）。ViewModel 把 `activeSubscriptions` 和开关状态 `combine` 起来，任一变化就重写；Worker 每天也重写一次；关掉开关会删除整个日历。开关状态存在 SharedPreferences（`subguard_settings`），不在 Room 里。
+- 对这个日历的增删都以同步适配器身份（`CALLER_IS_SYNCADAPTER`）进行：本机账号没有同步程序，普通删除只给事件打删除标记，事件会一直留在日历数据库里。卸载 App 不会删除这个日历，设置页的说明文字提醒了用户。
+
 **金额合计按币种分组**（`monthlyTotalsByCurrency`），不做汇率换算：首页大数字只显示 CNY，外币单独列"另有 …"。
 
 ## 需求约束（改动前先对照）
 
 以下都是原始需求或用户做过的决定，代码里不一定看得出来：
 - **不申请网络权限**：`INTERNET` 是 ML Kit 的遥测依赖带进来的，`AndroidManifest.xml` 用 `tools:node="remove"` 把它剔除；`AppManifestTest` 会检查。新增依赖后，要确认合并后的 manifest 里没有重新出现 `INTERNET`。
-- **数据只留在本机**：`allowBackup="false"`，没有云同步，也没有导出功能。
+- **数据只留在本机**：`allowBackup="false"`，没有云同步，也没有导出功能。唯一的例外是用户主动打开的"同步到手机日历"：只写本机账号下的日历，不能写进任何云端账号的日历。
 - **不引入 Gemini 或任何生成式 AI 依赖**。
 - **面向中老年用户的字号**：body/label 样式 ≥ 16sp，title 及更大 ≥ 20sp，由 `TypographyTest` 检查。界面文字一律用 `MaterialTheme.typography`，不写死 `fontSize`。
 - **OCR 结果只是建议值**：不能覆盖用户已填的内容（"仅填空白项"），没识别出来的字段要提示用户手动填写。
@@ -52,7 +64,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 数据库与测试的坑
 
-- `AppDatabase` 用的是 `fallbackToDestructiveMigration(dropAllTables = true)`，而且 `exportSchema = false`：**只要改 `Subscription` 实体，用户数据就会被全部清空**。改表结构必须提升 version，并写一个真正的 `Migration`。
+- `AppDatabase` 用的是 `fallbackToDestructiveMigration(dropAllTables = true)`，而且 `exportSchema = false`：**只要改 `Subscription` 实体，用户数据就会被全部清空**。改表结构必须提升 version，并写一个真正的 `Migration`。给实体加计算值要写成函数（如 `monthsPerCycle()`）：带幕后字段的属性会被 Room 当成一列。
 - Robolectric 的默认屏幕很小，`LazyColumn` 里屏幕外的条目根本不会被渲染。要先滚动再断言：首页列表的 tag 是 `home_screen_list`；表单的 `LazyColumn` 没有 tag，用 `onNode(hasScrollToNodeAction())` 定位。
 - `ExampleRobolectricTest` 启动的是真实的 `MainActivity`，用的是基于文件的 `AppDatabase` 单例，写进去的数据会带到同一个类的其他用例里。依赖数据内容的界面测试，按 `HomeScreenTest` 的做法：内存 Room 加直接构造的 `SubscriptionViewModel`，再用 `createComposeRule()` 渲染单个页面。
 - 当前 Compose BOM（2024.09）里 `combinedClickable` 需要 `@OptIn(ExperimentalFoundationApi::class)`。
