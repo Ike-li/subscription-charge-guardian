@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.OpenInBrowser
@@ -64,6 +66,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.calendar.addToCalendarIntent
 import com.example.data.Subscription
 import com.example.ui.SubscriptionViewModel
 import com.example.ui.components.ConfirmDeleteDialog
@@ -385,6 +388,36 @@ fun DetailScreen(
                                 }
                             }
                         }
+                    }
+                }
+
+                // 放进手机日历：由日历 App 负责提醒，本应用没拿到通知权限或被系统清理后台时也能提醒
+                item {
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        OutlinedButton(
+                            onClick = {
+                                try {
+                                    context.startActivity(addToCalendarIntent(sub))
+                                } catch (_: ActivityNotFoundException) {
+                                    Toast.makeText(context, "没有找到日历应用", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .testTag("detail_add_to_calendar_button"),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.Event, contentDescription = null)
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("添加到手机日历", style = MaterialTheme.typography.titleSmall)
+                        }
+                        Text(
+                            text = "由日历负责提醒，本应用收不到通知时也不会错过。提前几天提醒请在日历里设置；" +
+                                "如果所选日历会同步到云端，订阅名称和金额也会一起同步。",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
